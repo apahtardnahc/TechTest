@@ -1,5 +1,5 @@
+using System;
 using System.Linq;
-using FluentAssertions;
 using UserManagement.Models;
 
 namespace UserManagement.Data.Tests;
@@ -14,9 +14,10 @@ public class DataContextTests
 
         var entity = new User
         {
-            Forename = "Brand New",
-            Surname = "User",
-            Email = "brandnewuser@example.com"
+            Forename = "James",
+            Surname = "Bond",
+            Email = "Double07@example.com",
+            DateOfBirth = new DateTime(2000, 1, 1),
         };
         context.Create(entity);
 
@@ -42,6 +43,56 @@ public class DataContextTests
 
         // Assert: Verifies that the action of the method under test behaves as expected.
         result.Should().NotContain(s => s.Email == entity.Email);
+    }
+
+    // Tests for Date of Birth
+    [Fact]
+    public void GetAll_WhenUserHasDateOfBirth_MustReturnUserWithDateOfBirth()
+    {
+        // Arrange
+        var context = CreateContext();
+        var dateOfBirth = new DateTime(1990, 5, 15);
+
+        var entity = new User
+        {
+            Forename = "James",
+            Surname = "Peach",
+            Email = "AGiantPeach@example.com",
+            DateOfBirth = dateOfBirth
+        };
+
+        context.Create(entity);
+        // Act
+        var result = context.GetAll<User>();
+
+        // Assert
+        result
+            .Should().Contain(u => u.Id == entity.Id)
+            .Which.DateOfBirth.Should().Be(entity.DateOfBirth);
+    }
+
+    [Fact]
+    public void GetAll_WhenUserHasNullDateOfBirth_MustReturnUserWithNullDateOfBirth()
+    {
+        // Arrange
+        var context = CreateContext();
+
+        var entity = new User
+        {
+            Forename = "James",
+            Surname = "Aurthur",
+            Email = "WillNotLetGo@example.com",
+            DateOfBirth = null
+        };
+
+        context.Create(entity);
+        // Act
+        var result = context.GetAll<User>();
+
+        // Assert
+        result
+            .Should().Contain(u => u.Id == entity.Id)
+            .Which.DateOfBirth.Should().Be(entity.DateOfBirth);
     }
 
     private DataContext CreateContext() => new();
