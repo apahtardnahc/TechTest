@@ -1,0 +1,49 @@
+﻿@model UserManagement.Web.Models.Users.UserViewModel
+
+<h2>Create</h2>
+<h3>Creating a user</h3>
+
+<form asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly"> </div>
+
+    <div>
+        <label asp-for="Forename" class="form-label"></label>
+        <input asp-for="Forename" class="form-control"/>
+        <span asp-validation-for="Forename"></span>
+    </div>
+
+    <div>
+        <label asp-for="Surname" class="form-label"></label>
+        <input asp-for="Surname" class="form-control"/>
+        <span asp-validation-for="Surname"></span>
+    </div>
+
+    <div>
+        <label asp-for="Email" class="form-label"></label>
+        <input asp-for="Email" class="form-control" type="email"/>
+        <span asp-validation-for="Email"></span>
+    </div>
+
+    <div>
+        <label asp-for="DateOfBirth" class="form-label"></label>
+        <input asp-for="DateOfBirth" class="form-control" type="date"/>
+        <span asp-validation-for="DateOfBirth"></span>
+    </div>
+
+    @* Radio button for active or in active *@
+    <div>
+        <input asp-for="IsActive" class="form-check-input" type="checkbox"/>
+        <label asp-for="IsActive" class="form-check-label"></label>
+        <span asp-validation-for="IsActive"></span>
+    </div>
+
+    <div>
+        <button type="submit">Create user</button>
+        <a asp-action="List"> Cancel</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

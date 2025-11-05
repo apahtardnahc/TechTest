@@ -12,4 +12,10 @@ public interface IUserService
     /// <returns></returns>
     IEnumerable<User> FilterByActive(bool isActive);
     IEnumerable<User> GetAll();
+
+    // Task 3
+    User? GetById(long id);
+    User Create(User user);
+    User Update(User user);
+    User? Delete(long id);
 }

@@ -1,0 +1,53 @@
+﻿@model UserManagement.Web.Models.Users.UserViewModel
+
+<h2>Edit</h2>
+<h3>Editing a user</h3>
+
+<form asp-action="Edit" method="post">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div>
+        <label asp-for="Forename" class="form-label"></label>
+        <input asp-for="Forename" class="form-control"/>
+        <span asp-validation-for="Forename" class="text-danger"></span>
+    </div>
+
+    <div>
+        <label asp-for="Surname" class="form-label"></label>
+        <input asp-for="Surname" class="form-control"/>
+        <span asp-validation-for="Surname" class="text-danger"></span>
+    </div>
+
+    <div>
+        <label asp-for="Email" class="form-label"></label>
+        <input asp-for="Email" class="form-control" type="email"/>
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div>
+        <label asp-for="DateOfBirth" class="form-label"></label>
+        <input asp-for="DateOfBirth" class="form-control" type="date"/>
+        <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+    </div>
+
+    @* Radio button for active or in active and have it on is active by default maybe*@
+    <div>
+        <input asp-for="IsActive" class="form-check-input" type="checkbox"/>
+        <label asp-for="IsActive" class="form-check-label"></label>
+    </div>
+
+    <div>
+        <button type="submit">Save Changes</button>
+        <a asp-action="List"> Cancel</a>
+    </div>
+
+</form>
+
+@* @section Scripts {
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+   } *@
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

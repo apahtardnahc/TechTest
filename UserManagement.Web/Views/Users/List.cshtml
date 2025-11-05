@@ -1,8 +1,15 @@
 ﻿@model UserManagement.Web.Models.Users.UserListViewModel
 
-<h2>User List</h2>
+@{
+    if (TempData.Peek("Message") != null)
+    {
+        <h3> @TempData.Peek("Message")</h3>
+    }
+}
+    <h2>User List</h2>
+    
 
-<div class="table-responsive">
+<div class="table-responsive" style="width: auto">
     <table class="table table-striped">
         <thead>
             <tr>
@@ -43,9 +50,9 @@
                                 Actions
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="btnToggleActions">
-                                <li><a class="dropdown-item" href="#">View</a></li>
-                                <li><a class="dropdown-item" href="#">Edit</a></li>
-                                <li><a class="dropdown-item" href="#">Delete</a></li>
+                                <li><a class="dropdown-item" asp-controller="Users" asp-action="View" asp-route-id="@item.Id">View</a></li>
+                                <li><a class="dropdown-item" asp-controller="Users" asp-action="Edit" asp-route-id="@item.Id">Edit</a></li>
+                                <li><a class="dropdown-item" asp-controller="Users" asp-action="Delete" asp-route-id="@item.Id">Delete</a></li>
                             </ul>
                         </div>
                     </td>
@@ -61,8 +68,8 @@
         <a asp-controller="Users" asp-action="Active" class="btn btn-default">Active Only</a>
         <a asp-controller="Users" asp-action="Inactive" class="btn btn-default">Non Active</a>
     </div>
-
-    <a href="#" class="btn btn-primary float-end">
+   @* Adding a user *@
+    <a asp-controller="Users" asp-action="Create" class="btn btn-primary float-end">
         Add User
     </a>
 </div>
