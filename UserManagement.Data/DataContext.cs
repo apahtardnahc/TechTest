@@ -1,16 +1,29 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using UserManagement.Models;
+using UserManagement.Web.Models.Logs;
 
 namespace UserManagement.Data;
 
 public class DataContext : DbContext, IDataContext
 {
-    public DataContext() => Database.EnsureCreated();
+    public DataContext() { }
 
+    // Database is persisting between tests need to fix
+    public DataContext(DbContextOptions<DataContext> options) : base(options) { }
+
+    // Causing persisting issues with tests
     protected override void OnConfiguring(DbContextOptionsBuilder options)
-        => options.UseInMemoryDatabase("UserManagement.Data.DataContext");
+    {
+        if (!options.IsConfigured)
+        {
+            options.UseInMemoryDatabase("UserManagement.Data.DataContext");
+        }
+
+    }
 
     protected override void OnModelCreating(ModelBuilder model)
         => model.Entity<User>().HasData(new[]
@@ -115,29 +128,32 @@ public class DataContext : DbContext, IDataContext
                 DateOfBirth = null
             },
         });
+    
 
-    public DbSet<User>? Users { get; set; }
+    public DbSet<User> Users { get; set; }
 
-    public IQueryable<TEntity> GetAll<TEntity>() where TEntity : class
-        => base.Set<TEntity>();
+    public DbSet<Log> Logs { get; set; }
 
-    public TEntity Create<TEntity>(TEntity entity) where TEntity : class
+    public async Task<List<TEntity>> GetAllAsync<TEntity>() where TEntity : class
+        => await Set<TEntity>().ToListAsync();
+
+    public async Task<TEntity> CreateAsync<TEntity>(TEntity entity) where TEntity : class
     {
-        base.Add(entity);
-        SaveChanges();
+        await base.AddAsync(entity);
+        await SaveChangesAsync();
         return entity;
     }
 
-    public new TEntity Update<TEntity>(TEntity entity) where TEntity : class
+    public async Task<TEntity> UpdateAsync<TEntity>(TEntity entity) where TEntity : class
     {
         base.Update(entity);
-        SaveChanges();
+        await SaveChangesAsync();
         return entity;
     }
 
-    public void Delete<TEntity>(TEntity entity) where TEntity : class
+    public async Task DeleteAsync<TEntity>(TEntity entity) where TEntity : class
     {
         base.Remove(entity);
-        SaveChanges();
+        await SaveChangesAsync();
     }
 }

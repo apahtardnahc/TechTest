@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UserManagement.Data;
 using UserManagement.Models;
 using UserManagement.Repository.Implementations;
@@ -10,20 +11,17 @@ namespace UserManagement.Repository.Tests;
 public class UserRepositoryTests
 {
     [Fact]
-    public void GetAll_ShouldReturnAnEmptyCollection_WhenNoUsers()
+    public async Task GetAllAsync_ShouldReturnAnEmptyCollection_WhenNoUsers()
     {
         // Arrange
-        //var mockDataContext = new Mock<IDataContext>();
-        //mockDataContext.Setup(x => x.GetAll<User>())
-        //        .Returns(new List<User>().AsQueryable());
+        var mockDataContext = new Mock<IDataContext>();
+        mockDataContext.Setup(x => x.GetAllAsync<User>())
+                .ReturnsAsync(new List<User>());
 
-        //var repository = new UserRepository(mockDataContext.Object);
-        _dataContext.Setup(x => x.GetAll<User>())
-                .Returns(new List<User>().AsQueryable());
+        var repository = new UserRepository(mockDataContext.Object);
 
-        var repository = new UserRepository(_dataContext.Object);
         // Act
-        var result = repository.GetAll();
+        var result = await repository.GetAllAsync();
 
         // Assert
         result.AsEnumerable().Should().NotBeNull();
@@ -31,7 +29,7 @@ public class UserRepositoryTests
     }
 
     [Fact]
-    public void GetAll_WhenCalled_ShouldReturnAllUsers()
+    public async Task GetAllAsync_WhenCalled_ShouldReturnAllUsers()
     {
         // Arrange
         var mockDataContext = new Mock<IDataContext>();
@@ -55,14 +53,14 @@ public class UserRepositoryTests
                 DateOfBirth = new DateTime(2000, 1, 1)
             },
         };
-        
-        mockDataContext.Setup(x => x.GetAll<User>())
-            .Returns(users.AsQueryable);
+
+        mockDataContext.Setup(x => x.GetAllAsync<User>())
+            .ReturnsAsync(users);
 
         var repository = new UserRepository(mockDataContext.Object);
 
         // Act
-        var result = repository.GetAll();
+        var result = await repository.GetAllAsync();
 
         // Assert
         result.Should().NotBeNull();
@@ -71,7 +69,7 @@ public class UserRepositoryTests
     }
 
     [Fact]
-    public void GetByActiveStatus_WhenCalledWithTrue_ShouldReturnActiveUsers()
+    public async Task GetByActiveStatusAsync_WhenCalledWithTrue_ShouldReturnActiveUsers()
     {
         // Arrange
         var mockDataContext = new Mock<IDataContext>();
@@ -88,11 +86,11 @@ public class UserRepositoryTests
             },
         };
 
-        mockDataContext.Setup(x => x.GetAll<User>()).Returns(users.AsQueryable());
+        mockDataContext.Setup(x => x.GetAllAsync<User>()).ReturnsAsync(users);
         var repository = new UserRepository(mockDataContext.Object);
 
         // Act
-        var result = repository.GetByActiveStatus(true);
+        var result = await repository.GetByActiveStatusAsync(true);
 
         // Assert
         result.Should().NotBeNull();
@@ -101,7 +99,7 @@ public class UserRepositoryTests
     }
 
     [Fact]
-    public void GetByActiveStatus_WhenCalledWithFalse_ShouldReturnInactiveUsers()
+    public async Task GetByActiveStatusAsync_WhenCalledWithFalse_ShouldReturnInactiveUsers()
     {
         // Arrange
         var mockDataContext = new Mock<IDataContext>();
@@ -118,11 +116,11 @@ public class UserRepositoryTests
             },
         };
 
-        mockDataContext.Setup(x => x.GetAll<User>()).Returns(users.AsQueryable());
+        mockDataContext.Setup(x => x.GetAllAsync<User>()).ReturnsAsync(users);
         var repository = new UserRepository(mockDataContext.Object);
 
         // Act
-        var result = repository.GetByActiveStatus(false);
+        var result = await repository.GetByActiveStatusAsync(false);
 
         // Assert
         result.Should().NotBeNull();
@@ -131,7 +129,7 @@ public class UserRepositoryTests
     }
 
     [Fact]
-    public void GetByActiveStatus_WhenCalledWithTrueAndMixedUsers_ShouldReturnOnlyActiveUsers()
+    public async Task GetByActiveStatusAsync_WhenCalledWithTrueAndMixedUsers_ShouldReturnOnlyActiveUsers()
     {
         // Arrange
         var mockDataContext = new Mock<IDataContext>();
@@ -156,11 +154,11 @@ public class UserRepositoryTests
             },
         };
 
-        mockDataContext.Setup(x => x.GetAll<User>()).Returns(users.AsQueryable());
+        mockDataContext.Setup(x => x.GetAllAsync<User>()).ReturnsAsync(users);
         var repository = new UserRepository(mockDataContext.Object);
 
         // Act
-        var result = repository.GetByActiveStatus(true);
+        var result = await repository.GetByActiveStatusAsync(true);
 
         // Assert
         result.Should().NotBeNull();
@@ -169,7 +167,7 @@ public class UserRepositoryTests
     }
 
     [Fact]
-    public void GetByActiveStatus_WhenCalledWithFalseAndMixedUsers_ShouldReturnOnlyInactiveUsers()
+    public async Task GetByActiveStatusAsync_WhenCalledWithFalseAndMixedUsers_ShouldReturnOnlyInactiveUsers()
     {
         // Arrange
         var mockDataContext = new Mock<IDataContext>();
@@ -194,11 +192,11 @@ public class UserRepositoryTests
             },
         };
 
-        mockDataContext.Setup(x => x.GetAll<User>()).Returns(users.AsQueryable());
+        mockDataContext.Setup(x => x.GetAllAsync<User>()).ReturnsAsync(users);
         var repository = new UserRepository(mockDataContext.Object);
 
         // Act
-        var result = repository.GetByActiveStatus(false);
+        var result = await repository.GetByActiveStatusAsync(false);
 
         // Assert
         result.Should().NotBeNull();
@@ -206,27 +204,26 @@ public class UserRepositoryTests
         result.First().IsActive.Should().BeFalse();
     }
 
-    // TODO adding Task 3 tests
 
     [Fact]
-    public void GetById_WhenUserListEmpty_ShouldReturnNull()
+    public async Task GetByIdAsync_WhenUserListEmpty_ShouldReturnNull()
     {
         // Arrange
         var mockDataContext = new Mock<IDataContext>();
         var users = new List<User>();
 
-        mockDataContext.Setup(x => x.GetAll<User>()).Returns(users.AsQueryable());
+        mockDataContext.Setup(x => x.GetAllAsync<User>()).ReturnsAsync(users);
         var repository = new UserRepository(mockDataContext.Object);
 
         // Act
-        var result = repository.GetById(1);
+        var result = await repository.GetByIdAsync(1);
 
         // Assert
         result.Should().BeNull();
     }
 
     [Fact]
-    public void GetById_WhenUserExists_ShouldReturnUser()
+    public async Task GetByIdAsync_WhenUserExists_ShouldReturnUser()
     {
         // Arrange
         var mockDataContext = new Mock<IDataContext>();
@@ -236,11 +233,11 @@ public class UserRepositoryTests
             new User { Id = 2, Forename = "Hannah", Surname = "Smith", Email = "hannahsmith@example.com", IsActive = false }
         };
 
-        mockDataContext.Setup(x => x.GetAll<User>()).Returns(users.AsQueryable());
+        mockDataContext.Setup(x => x.GetAllAsync<User>()).ReturnsAsync(users);
         var repository = new UserRepository(mockDataContext.Object);
 
         // Act
-        var result = repository.GetById(1);
+        var result = await repository.GetByIdAsync(1);
 
         // Assert
         result.Should().NotBeNull();
@@ -252,7 +249,7 @@ public class UserRepositoryTests
     }
 
     [Fact]
-    public void GetById_WhenUserDoesNotExist_ShouldReturnNull()
+    public async Task GetByIdAsync_WhenUserDoesNotExist_ShouldReturnNull()
     {
         // Arrange
         var mockDataContext = new Mock<IDataContext>();
@@ -262,18 +259,18 @@ public class UserRepositoryTests
              new User { Forename = "Hannah", Surname = "Smith", Email = "hannahsmith@example.com", IsActive = false }
          };
 
-        mockDataContext.Setup(x => x.GetAll<User>()).Returns(users.AsQueryable());
+        mockDataContext.Setup(x => x.GetAllAsync<User>()).ReturnsAsync(users);
         var repository = new UserRepository(mockDataContext.Object);
 
         // Act
-        var result = repository.GetById(99);
+        var result = await repository.GetByIdAsync(99);
 
         // Assert
         result.Should().BeNull();
     }
 
     [Fact]
-    public void Create_WhenCalled_ShouldCallDataContext()
+    public async Task CreateAsync_WhenCalled_ShouldCallDataContext()
     {
         // Arrange
         var mockDataContext = new Mock<IDataContext>();
@@ -289,14 +286,14 @@ public class UserRepositoryTests
         };
 
         // Act
-        var result = repository.Create(user);
+        var result = await repository.CreateAsync(user);
 
         // Assert
-        mockDataContext.Verify(x => x.Create(user), Times.AtMostOnce);
+        mockDataContext.Verify(x => x.CreateAsync(user), Times.AtMostOnce);
     }
 
     [Fact]
-    public void Create_WhenValidUserIsGiven_ShouldCreateUser()
+    public async Task CreateAsync_WhenValidUserIsGiven_ShouldCreateUser()
     {
         // Arrange
         var mockDataContext = new Mock<IDataContext>();
@@ -312,23 +309,23 @@ public class UserRepositoryTests
         };
 
         mockDataContext
-            .Setup(x => x.Create(user))
+            .Setup(x => x.CreateAsync(user))
             .Callback<User>(u => u.Id = 1)
-            .Returns<User>(u => u);
+            .ReturnsAsync(user);
 
         // Act
-        var result = repository.Create(user);
+        var result = await repository.CreateAsync(user);
 
         // Assert
-        mockDataContext.Verify(x => x.Create(user), Times.AtMostOnce);
+        mockDataContext.Verify(x => x.CreateAsync(user), Times.AtMostOnce);
         result.Should().NotBeNull();
         result.Should().BeSameAs(user);
         result.Id.Should().Be(1);
     }
 
-    // TODO update
+
     [Fact]
-    public void Update_WhenCalled_ShouldCallDataContext()
+    public async Task UpdateAsync_WhenCalled_ShouldCallDataContext()
     {
         // Arrange
         var mockDataContext = new Mock<IDataContext>();
@@ -345,20 +342,19 @@ public class UserRepositoryTests
         };
 
         // Act
-        var result = repository.Update(updatedUser);
+        var result = await repository.UpdateAsync(updatedUser);
 
         // Assert
-        mockDataContext.Verify(x => x.Update(updatedUser), Times.AtMostOnce);
+        mockDataContext.Verify(x => x.UpdateAsync(updatedUser), Times.AtMostOnce);
     }
 
     [Fact]
-    public void Update_WhenValidUser_ShouldReturnUpdatedUser()
+    public async Task UpdateAsync_WhenValidUser_ShouldReturnUpdatedUser()
     {
         // Arrange
         var mockDataContext = new Mock<IDataContext>();
         var repository = new UserRepository(mockDataContext.Object);
 
-        // TODO remove if you can't find solution to integrate the change 
         var user = new User
         {
             Forename = "Forename",
@@ -367,8 +363,6 @@ public class UserRepositoryTests
             IsActive = true,
             DateOfBirth = new DateTime(2000, 1, 1)
         };
-
-        // Can we add an old user then update and then expect it to update?
 
         var updatedUser = new User
         {
@@ -381,21 +375,21 @@ public class UserRepositoryTests
         };
 
         mockDataContext
-            .Setup(x => x.Update(updatedUser))
-            .Returns<User>(u => u);
+            .Setup(x => x.UpdateAsync(updatedUser))
+            .ReturnsAsync(updatedUser);
 
         // Act
-        var result = repository.Update(updatedUser);
+        var result = await repository.UpdateAsync(updatedUser);
 
         // Assert
-        mockDataContext.Verify(x => x.Update(updatedUser), Times.AtMostOnce);
+        mockDataContext.Verify(x => x.UpdateAsync(updatedUser), Times.AtMostOnce);
         result.Should().NotBeNull();
         result.Should().BeSameAs(updatedUser);
         result.Id.Should().Be(1);
     }
 
     [Fact]
-    public void Delete_WhenUserExists_ShouldDeleteAndReturnUser()
+    public async Task DeleteAsync_WhenUserExists_ShouldDeleteAndReturnUser()
     {
         // Arrange
         var mockDataContext = new Mock<IDataContext>();
@@ -421,20 +415,20 @@ public class UserRepositoryTests
             },
         };
 
-        mockDataContext.Setup(x => x.GetAll<User>()).Returns(users.AsQueryable());
+        mockDataContext.Setup(x => x.GetAllAsync<User>()).ReturnsAsync(users);
 
         // Act
-        var result = repository.Delete(1);
+        var result = await repository.DeleteAsync(1);
 
         // Assert
-        mockDataContext.Verify(x => x.Delete(users.Where(u => u.Id == 1)), Times.AtMostOnce);
+        mockDataContext.Verify(x => x.DeleteAsync(users.Where(u => u.Id == 1)), Times.AtMostOnce);
 
         result.Should().NotBeNull();
         result.Id.Should().Be(1);
     }
 
     [Fact]
-    public void Delete_WhenUserDoesNotExist_ShouldReturnNull()
+    public async Task DeleteAsync_WhenUserDoesNotExist_ShouldReturnNull()
     {
         // Arrange
         var mockDataContext = new Mock<IDataContext>();
@@ -460,18 +454,18 @@ public class UserRepositoryTests
             },
         };
 
-        mockDataContext.Setup(x => x.GetAll<User>()).Returns(users.AsQueryable());
+        mockDataContext.Setup(x => x.GetAllAsync<User>()).ReturnsAsync(users);
 
         // Act
-        var result = repository.Delete(9999999);
+        var result = await repository.DeleteAsync(9999999);
 
         // Assert
-        mockDataContext.Verify(x => x.Delete(It.IsAny<User>()), Times.Never);
+        mockDataContext.Verify(x => x.DeleteAsync(It.IsAny<User>()), Times.Never);
         result.Should().BeNull();
     }
 
     [Fact]
-    public void Delete_WhenUserActiveUserDeleted_ShouldDeleteAndReturnUser()
+    public async Task DeleteAsync_WhenUserActiveUserDeleted_ShouldDeleteAndReturnUser()
     {
         // Arrange
         var mockDataContext = new Mock<IDataContext>();
@@ -489,13 +483,13 @@ public class UserRepositoryTests
             },
         };
 
-        mockDataContext.Setup(x => x.GetAll<User>()).Returns(users.AsQueryable());
+        mockDataContext.Setup(x => x.GetAllAsync<User>()).ReturnsAsync(users);
 
         // Act
-        var result = repository.Delete(1);
+        var result = await repository.DeleteAsync(1);
 
         // Assert
-        mockDataContext.Verify(x => x.Delete(users.Where(u => u.Id == 1)), Times.AtMostOnce);
+        mockDataContext.Verify(x => x.DeleteAsync(users.Where(u => u.Id == 1)), Times.AtMostOnce);
 
         result.Should().NotBeNull();
         result.Id.Should().Be(1);
@@ -503,7 +497,7 @@ public class UserRepositoryTests
     }
 
     [Fact]
-    public void Delete_WhenUserInactiveUserDeleted_ShouldDeleteAndReturnUser()
+    public async Task DeleteAsync_WhenUserInactiveUserDeleted_ShouldDeleteAndReturnUser()
     {
         // Arrange
         var mockDataContext = new Mock<IDataContext>();
@@ -521,13 +515,13 @@ public class UserRepositoryTests
             },
         };
 
-        mockDataContext.Setup(x => x.GetAll<User>()).Returns(users.AsQueryable());
+        mockDataContext.Setup(x => x.GetAllAsync<User>()).ReturnsAsync(users);
 
         // Act
-        var result = repository.Delete(1);
+        var result = await repository.DeleteAsync(1);
 
         // Assert
-        mockDataContext.Verify(x => x.Delete(users.Where(u => u.Id == 1)), Times.AtMostOnce);
+        mockDataContext.Verify(x => x.DeleteAsync(users.Where(u => u.Id == 1)), Times.AtMostOnce);
 
         result.Should().NotBeNull();
         result.Id.Should().Be(1);
@@ -535,7 +529,7 @@ public class UserRepositoryTests
     }
 
     [Fact]
-    public void Delete_WhenSpecificUserDeleted_ShouldOnlyDeleteAndReturnSpecifiedUser()
+    public async Task DeleteAsync_WhenSpecificUserDeleted_ShouldOnlyDeleteAndReturnSpecifiedUser()
     {
         // Arrange
         var mockDataContext = new Mock<IDataContext>();
@@ -569,16 +563,16 @@ public class UserRepositoryTests
             },
         };
 
-        mockDataContext.Setup(x => x.GetAll<User>()).Returns(users.AsQueryable());
+        mockDataContext.Setup(x => x.GetAllAsync<User>()).ReturnsAsync(users);
 
         // Act
-        var result = repository.Delete(1);
+        var result = await repository.DeleteAsync(1);
 
         //Assert
-        mockDataContext.Verify(x => x.Delete(It.Is<User>(u => u.Id == 1)), Times.AtMostOnce);
-        mockDataContext.Verify(x => x.Delete(It.Is<User>(u => u.Id == 2)), Times.Never);
-        mockDataContext.Verify(x => x.Delete(It.Is<User>(u => u.Id == 3)), Times.Never);
-        
+        mockDataContext.Verify(x => x.DeleteAsync(It.Is<User>(u => u.Id == 1)), Times.AtMostOnce);
+        mockDataContext.Verify(x => x.DeleteAsync(It.Is<User>(u => u.Id == 2)), Times.Never);
+        mockDataContext.Verify(x => x.DeleteAsync(It.Is<User>(u => u.Id == 3)), Times.Never);
+
         result.Should().NotBeNull();
     }
 

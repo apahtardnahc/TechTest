@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using UserManagement.Models;
 using UserManagement.Services.Domain.Interfaces;
 using UserManagement.Web.Models.Users;
@@ -9,13 +10,19 @@ namespace UserManagement.WebMS.Controllers;
 public class UsersController : Controller
 {
     private readonly IUserService _userService;
-    public UsersController(IUserService userService) => _userService = userService;
+    private readonly ILogService _logService;
+
+    public UsersController(IUserService userService, ILogService logService)
+    {
+        _userService = userService;
+        _logService = logService;
+    } 
 
     // Add route to this maybe list?
     [HttpGet]
-    public ViewResult List()
+    public async Task<ViewResult> List()
     {
-        var items = _userService.GetAll().Select(MapToListItem);
+        var items = (await _userService.GetAllAsync()).Select(MapToListItem);
 
         var model = new UserListViewModel { Items = items.ToList() };
 
@@ -23,9 +30,9 @@ public class UsersController : Controller
     }
 
     [HttpGet("active")]
-    public ViewResult Active()
+    public async Task<ViewResult> Active()
     {
-        var items = _userService.FilterByActive(true).Select(MapToListItem);
+        var items = (await _userService.FilterByActiveAsync(true)).Select(MapToListItem);
         
         var model = new UserListViewModel { Items = items.ToList() };
 
@@ -33,9 +40,9 @@ public class UsersController : Controller
     }
 
     [HttpGet("inactive")]
-    public ViewResult Inactive()
+    public async Task<ViewResult> Inactive()
     {
-        var items = _userService.FilterByActive(false).Select(MapToListItem);
+        var items = (await _userService.FilterByActiveAsync(false)).Select(MapToListItem);
 
         var model = new UserListViewModel { Items = items.ToList() };
 
@@ -44,9 +51,9 @@ public class UsersController : Controller
 
     // View action
     [HttpGet("view/{id}")]
-    public IActionResult View(long id)
+    public async Task<IActionResult> View(long id)
     {
-        var user = _userService.GetById(id);
+        var user = await _userService.GetByIdAsync(id);
 
         // Check if user is null
         if (user == null)
@@ -55,8 +62,26 @@ public class UsersController : Controller
             return NotFound();
         }
 
+        // Attempting to log the action
+        await _logService.CreateAsync("VIEW", id, $"VIEWED User: {user.Forename} {user.Surname}");
+
+        // Return logs with this so they can see it at bottom of screen
+
+        var userLogs = await _logService.GetByUserIdAsync(id);
+
+        var userActivityLogs = userLogs.Select(log => new UserActivityLogViewModel()
+        {
+            Id = log.Id,
+            Action = log.Action,
+            Details = log.Details,
+            TimeStamp = log.TimeStamp
+        }).ToList();
+
         var model = UserToModel(user);
 
+        model.UserActivityLogs = userActivityLogs;
+
+        
         return View(model);
     }
 
@@ -69,7 +94,7 @@ public class UsersController : Controller
 
     [HttpPost("create")]
     [ValidateAntiForgeryToken]
-    public IActionResult Create(UserViewModel model)
+    public async Task<IActionResult> Create(UserViewModel model)
     {
         if (!ModelState.IsValid)
         {
@@ -78,17 +103,19 @@ public class UsersController : Controller
 
         var user = ModelToUser(model);
 
-        _userService.Create(user);
+        var createdUser = await _userService.CreateAsync(user);
 
+        await _logService.CreateAsync("CREATE", createdUser.Id, $"CREATED User: {createdUser.Forename} {createdUser.Surname}");
         SetMessage("CREATE", user);
+
         return RedirectToAction(nameof(List));
     }
 
     // Edit
     [HttpGet("edit/{id}")]
-    public IActionResult Edit(long id)
+    public async Task<IActionResult> Edit(long id)
     {
-        var user = _userService.GetById(id);
+        var user = await _userService.GetByIdAsync(id);
 
         if (user == null)
         {
@@ -102,7 +129,7 @@ public class UsersController : Controller
 
     [HttpPost("edit/{id}")]
     [ValidateAntiForgeryToken]
-    public IActionResult Edit(long id, UserViewModel model)
+    public async Task<IActionResult> Edit(long id, UserViewModel model)
     {
 
         //Check that the ids match
@@ -116,7 +143,7 @@ public class UsersController : Controller
             return View(model);
         }
 
-        var user = _userService.GetById(id);
+        var user = await _userService.GetByIdAsync(id);
 
         if (user == null)
         {
@@ -125,17 +152,19 @@ public class UsersController : Controller
 
         UpdateUserFromViewModel(user, model);
 
-        _userService.Update(user);
+        var updatedUser = await _userService.UpdateAsync(user);
 
+        await _logService.CreateAsync("UPDATE", updatedUser.Id, $"UPDATED User: {updatedUser.Forename} {updatedUser.Surname}");
         SetMessage("UPDATE", user);
+
         return RedirectToAction(nameof(List));
     }
 
     // Delete
     [HttpGet("delete/{id}")]
-    public IActionResult Delete(long id)
+    public async Task<IActionResult> Delete(long id)
     {
-        var user = _userService.GetById(id);
+        var user = await _userService.GetByIdAsync(id);
 
         if (user == null)
         {
@@ -149,15 +178,16 @@ public class UsersController : Controller
 
     [HttpPost("delete/{id}")]
     [ValidateAntiForgeryToken]
-    public IActionResult ConfirmDelete(long id)
+    public async Task<IActionResult> ConfirmDelete(long id)
     {
-        var user = _userService.Delete(id);
+        var user = await _userService.DeleteAsync(id);
 
         if (user == null)
         {
             return NotFound();
         }
 
+        await _logService.CreateAsync("DELETE", id, $"DELETED User: {user.Forename} {user.Surname}");
         SetMessage("DELETE", user);
         return RedirectToAction(nameof(List));
     }

@@ -14,7 +14,7 @@ public class DateOfBirthValidation : ValidationAttribute
     {
         return value switch
         {
-            null => false,
+            null => true,
             DateTime date => date <= DateTime.Today,
             _ => false
         };

@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Moq;
 using UserManagement.Models;
 using UserManagement.Repository.Interfaces;
 using UserManagement.Services.Domain.Implementations;
@@ -8,46 +11,50 @@ namespace UserManagement.Data.Tests;
 
 public class UserServiceTests
 {
+    private readonly Mock<IUserRepository> _userRepository = new();
+    private UserService CreateService() => new(_userRepository.Object);
+
     [Fact]
-    public void GetAll_WhenContextReturnsEntities_MustReturnSameEntities()
+    public async Task GetAllAsync_WhenContextReturnsEntities_MustReturnSameEntities()
     {
         // Arrange: Initializes objects and sets the value of the data that is passed to the method under test.
         var service = CreateService();
         var users = SetupUsers();
 
         // Act: Invokes the method under test with the arranged parameters.
-        var result = service.GetAll();
+        var result = await service.GetAllAsync();
 
         // Assert: Verifies that the action of the method under test behaves as expected.
         result.Should().BeSameAs(users);
     }
 
-    #region FilterByActive tests
-
-
-
+    #region FilterByActiveAsync tests
 
     [Fact]
-    public void WhenNoUsers_FilterByActive_WhenTrue_ShouldReturnNoUsers()
+    public async Task WhenNoUsers_FilterByActiveAsync_WhenTrue_ShouldReturnNoUsers()
     {
 
         // Arrange
         var service = CreateService();
-        var users = System.Array.Empty<User>().AsQueryable();
+        var users = System.Array.Empty<User>().ToList();
 
         _userRepository
-            .Setup(x => x.GetByActiveStatus(true))
-            .Returns(users);
+            .Setup(x => x.GetAllAsync())
+            .ReturnsAsync(users);
+
+        _userRepository
+            .Setup(x => x.GetByActiveStatusAsync(true))
+            .ReturnsAsync(users);
 
         // Act
-        var result = service.FilterByActive(true);
+        var result = await service.FilterByActiveAsync(true);
 
         // Assert
         result.Should().HaveCount(0);
     }
 
     [Fact]
-    public void FilterByActive_WhenTrue_ShouldReturnOnlyActiveUsers()
+    public async Task FilterByActiveAsync_WhenTrue_ShouldReturnOnlyActiveUsers()
     {
         // Arrange
         var service = CreateService();
@@ -69,14 +76,18 @@ public class UserServiceTests
                 Email = "ActiveUserEmail2@example.com",
                 IsActive = true
             }
-        }.AsQueryable();
+        }.ToList();
 
         _userRepository
-            .Setup(x => x.GetByActiveStatus(true))
-            .Returns(users);
+            .Setup(x => x.GetAllAsync())
+            .ReturnsAsync(users);
+
+        _userRepository
+            .Setup(x => x.GetByActiveStatusAsync(true))
+            .ReturnsAsync(users);
 
         // Act
-        var result = service.FilterByActive(true);
+        var result = await service.FilterByActiveAsync(true);
 
         // Assert
         result.Should().HaveCount(2);
@@ -85,26 +96,31 @@ public class UserServiceTests
     }
 
     [Fact]
-    public void WhenNoUsers_FilterByActive_WhenFalse_ShouldReturnNoUsers()
+    public async Task WhenNoUsers_FilterByActiveAsync_WhenFalse_ShouldReturnNoUsers()
     {
 
         // Arrange
         var service = CreateService();
-        var users = System.Array.Empty<User>().AsQueryable();
+        var users = System.Array.Empty<User>().ToList();
+
 
         _userRepository
-            .Setup(x => x.GetByActiveStatus(false))
-            .Returns(users);
+            .Setup(x => x.GetAllAsync())
+            .ReturnsAsync(users);
+
+        _userRepository
+            .Setup(x => x.GetByActiveStatusAsync(false))
+            .ReturnsAsync(users);
 
         // Act
-        var result = service.FilterByActive(false);
+        var result = await service.FilterByActiveAsync(false);
 
         // Assert
         result.Should().HaveCount(0);
     }
 
     [Fact]
-    public void FilterByActive_WhenFalse_ShouldReturnOnlyInactiveUsers()
+    public async Task FilterByActiveAsync_WhenFalse_ShouldReturnOnlyInactiveUsers()
     {
         // Arrange
         var service = CreateService();
@@ -126,14 +142,18 @@ public class UserServiceTests
                 Email = "InactiveUserEmail2@example.com",
                 IsActive = false
             },
-        }.AsQueryable();
+        }.ToList();
 
         _userRepository
-            .Setup(x => x.GetByActiveStatus(false))
-            .Returns(users);
+            .Setup(x => x.GetAllAsync())
+            .ReturnsAsync(users);
+
+        _userRepository
+            .Setup(x => x.GetByActiveStatusAsync(false))
+            .ReturnsAsync(users);
 
         // Act
-        var result = service.FilterByActive(false);
+        var result = await service.FilterByActiveAsync(false);
 
         // Assert
         result.Should().HaveCount(2);
@@ -141,7 +161,7 @@ public class UserServiceTests
     }
 
     [Fact]
-    public void FilterByActive_WhenTrue_CallsRepository()
+    public async Task FilterByActiveAsync_WhenTrue_CallsRepository()
     {
         // Arrange
         var service = CreateService();
@@ -163,22 +183,26 @@ public class UserServiceTests
                 Email = "ActiveUserEmail2@example.com",
                 IsActive = true
             }
-        }.AsQueryable();
+        }.ToList();
 
         _userRepository
-            .Setup(x => x.GetByActiveStatus(true))
-            .Returns(users);
+            .Setup(x => x.GetAllAsync())
+            .ReturnsAsync(users);
+
+        _userRepository
+            .Setup(x => x.GetByActiveStatusAsync(true))
+            .ReturnsAsync(users);
 
         // Act
-        var result = service.FilterByActive(true);
+        var result = await service.FilterByActiveAsync(true);
 
         // Assert
-        _userRepository.Verify(x => x.GetByActiveStatus(true), Times.AtMostOnce);
+        _userRepository.Verify(x => x.GetByActiveStatusAsync(true), Times.AtMostOnce);
         result.Should().Equal(users);
     }
 
     [Fact]
-    public void FilterByActive_WhenFalse_CallsRepository()
+    public async Task FilterByActiveAsync_WhenFalse_CallsRepository()
     {
         // Arrange
         var service = CreateService();
@@ -200,26 +224,30 @@ public class UserServiceTests
                 Email = "InactiveUserEmail2@example.com",
                 IsActive = false
             },
-        }.AsQueryable();
+        }.ToList();
 
         _userRepository
-            .Setup(x => x.GetByActiveStatus(false))
-            .Returns(users);
+            .Setup(x => x.GetAllAsync())
+            .ReturnsAsync(users);
+
+        _userRepository
+            .Setup(x => x.GetByActiveStatusAsync(false))
+            .ReturnsAsync(users);
 
         // Act
-        var result = service.FilterByActive(false);
+        var result = await service.FilterByActiveAsync(false);
 
         // Assert
-        _userRepository.Verify(x => x.GetByActiveStatus(false), Times.AtMostOnce);
+        _userRepository.Verify(x => x.GetByActiveStatusAsync(false), Times.AtMostOnce);
         result.Should().Equal(users);
     }
 
     #endregion
 
-    #region GetById Tests
+    #region GetByIdAsync Tests
 
     [Fact]
-    public void GetById_WhenUserExists_ShouldReturnUser()
+    public async Task GetByIdAsync_WhenUserExists_ShouldReturnUser()
     {
         // Arrange
         var service = CreateService();
@@ -233,37 +261,37 @@ public class UserServiceTests
             IsActive = false
         };
 
-        _userRepository.Setup(x => x.GetById(1)).Returns(user);
+        _userRepository.Setup(x => x.GetByIdAsync(1)).ReturnsAsync(user);
 
         // Act
-        var result = service.GetById(1);
+        var result = await service.GetByIdAsync(1);
 
         // Assert
-        _userRepository.Verify(x => x.GetById(1), Times.Once);
+        _userRepository.Verify(x => x.GetByIdAsync(1), Times.AtMostOnce);
 
         result.Should().NotBeNull();
         result.Should().BeEquivalentTo(user);
     }
 
     [Fact]
-    public void GetById_WhenUserDoesNotExist_ShouldReturnNull()
+    public async Task GetByIdAsync_WhenUserDoesNotExist_ShouldReturnNull()
     {
         // Arrange
         var service = CreateService();
         _userRepository
-            .Setup(x => x.GetById(999))
-            .Returns((User?)null);
+            .Setup(x => x.GetByIdAsync(999))
+            .ReturnsAsync((User?)null);
 
         // Act
-        var result = service.GetById(999);
+        var result = await service.GetByIdAsync(999);
 
         // Assert
-        _userRepository.Verify(x => x.GetById(999), Times.AtMostOnce);
+        _userRepository.Verify(x => x.GetByIdAsync(999), Times.AtMostOnce);
         result.Should().BeNull();
     }
 
     [Fact]
-    public void GetById_WhenInactiveUserExists_ShouldReturnInactiveUser()
+    public async Task GetByIdAsync_WhenInactiveUserExists_ShouldReturnInactiveUser()
     {
         // Arrange
         var service = CreateService();
@@ -277,13 +305,13 @@ public class UserServiceTests
             IsActive = false
         };
 
-        _userRepository.Setup(x => x.GetById(1)).Returns(user);
+        _userRepository.Setup(x => x.GetByIdAsync(1)).ReturnsAsync(user);
 
         // Act
-        var result = service.GetById(1);
+        var result = await service.GetByIdAsync(1);
 
         // Assert
-        _userRepository.Verify(x => x.GetById(1), Times.Once);
+        _userRepository.Verify(x => x.GetByIdAsync(1), Times.AtMostOnce);
 
         result.Should().NotBeNull();
         result.Should().BeEquivalentTo(user);
@@ -291,7 +319,7 @@ public class UserServiceTests
     }
 
     [Fact]
-    public void GetById_WhenActiveUserExists_ShouldReturnActiveUser()
+    public async Task GetByIdAsync_WhenActiveUserExists_ShouldReturnActiveUser()
     {
         // Arrange
         var service = CreateService();
@@ -305,13 +333,13 @@ public class UserServiceTests
             IsActive = true
         };
 
-        _userRepository.Setup(x => x.GetById(1)).Returns(user);
+        _userRepository.Setup(x => x.GetByIdAsync(1)).ReturnsAsync(user);
 
         // Act
-        var result = service.GetById(1);
+        var result = await service.GetByIdAsync(1);
 
         // Assert
-        _userRepository.Verify(x => x.GetById(1), Times.Once);
+        _userRepository.Verify(x => x.GetByIdAsync(1), Times.AtMostOnce);
 
         result.Should().NotBeNull();
         result.Should().BeEquivalentTo(user);
@@ -319,7 +347,7 @@ public class UserServiceTests
     }
 
     [Fact]
-    public void GetById_WhenUserWithNullDateOfBrith_ShouldReturnUserWithNullDateOfBirth()
+    public async Task GetByIdAsync_WhenUserWithNullDateOfBrith_ShouldReturnUserWithNullDateOfBirth()
     {
         // Arrange
         var service = CreateService();
@@ -333,13 +361,13 @@ public class UserServiceTests
             IsActive = true
         };
 
-        _userRepository.Setup(x => x.GetById(1)).Returns(user);
+        _userRepository.Setup(x => x.GetByIdAsync(1)).ReturnsAsync(user);
 
         // Act
-        var result = service.GetById(1);
+        var result = await service.GetByIdAsync(1);
 
         // Assert
-        _userRepository.Verify(x => x.GetById(1), Times.Once);
+        _userRepository.Verify(x => x.GetByIdAsync(1), Times.Once);
 
         result.Should().NotBeNull();
         result.Should().BeEquivalentTo(user);
@@ -347,7 +375,7 @@ public class UserServiceTests
     }
 
     [Fact]
-    public void GetById_WhenUserWithDateOfBirth_ShouldReturnUserWithDateOfBirth()
+    public async Task GetById_WhenUserWithDateOfBirth_ShouldReturnUserWithDateOfBirth()
     {
         // Arrange
         var service = CreateService();
@@ -361,13 +389,13 @@ public class UserServiceTests
             IsActive = true
         };
 
-        _userRepository.Setup(x => x.GetById(1)).Returns(user);
+        _userRepository.Setup(x => x.GetByIdAsync(1)).ReturnsAsync(user);
 
         // Act
-        var result = service.GetById(1);
+        var result = await service.GetByIdAsync(1);
 
         // Assert
-        _userRepository.Verify(x => x.GetById(1), Times.Once);
+        _userRepository.Verify(x => x.GetByIdAsync(1), Times.Once);
 
         result.Should().NotBeNull();
         result.Should().BeEquivalentTo(user);
@@ -376,10 +404,10 @@ public class UserServiceTests
 
     #endregion
 
-    #region Create Tests
+    #region CreateAsync Tests
 
     [Fact]
-    public void Create_WhenValidUserProvided_ShouldCallRepository()
+    public async Task CreateAsync_WhenValidUserProvided_ShouldCallRepository()
     {
         // Arrange
         var service = CreateService();
@@ -403,20 +431,20 @@ public class UserServiceTests
         };
 
         _userRepository
-            .Setup(x => x.Create(newUser))
-            .Returns(createdUser);
+            .Setup(x => x.CreateAsync(newUser))
+            .ReturnsAsync(createdUser);
 
         // Act
-        var result = service.Create(newUser);
+        var result = await service.CreateAsync(newUser);
 
         // Assert
-        _userRepository.Verify(x => x.Create(newUser), Times.AtMostOnce);
+        _userRepository.Verify(x => x.CreateAsync(newUser), Times.AtMostOnce);
 
         result.Should().NotBeNull();
     }
 
     [Fact]
-    public void Create_WhenValidUserProvided_ShouldCallRepositoryAndReturnUser()
+    public async Task CreateAsync_WhenValidUserProvided_ShouldCallRepositoryAndReturnUser()
     {
         // Arrange
         var service = CreateService();
@@ -440,14 +468,14 @@ public class UserServiceTests
         };
 
         _userRepository
-            .Setup(x => x.Create(newUser))
-            .Returns(createdUser);
+            .Setup(x => x.CreateAsync(newUser))
+            .ReturnsAsync(createdUser);
 
         // Act
-        var result = service.Create(newUser);
+        var result = await service.CreateAsync(newUser);
 
         // Assert
-        _userRepository.Verify(x => x.Create(newUser), Times.AtMostOnce);
+        _userRepository.Verify(x => x.CreateAsync(newUser), Times.AtMostOnce);
 
         result.Should().NotBeNull();
         result.Id.Should().Be(1);
@@ -461,7 +489,7 @@ public class UserServiceTests
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
-    public void Create_WhenActiveUserProvided_ShouldCreateAndReturnActiveUser(bool isActive)
+    public async Task CreateAsync_WhenActiveUserProvided_ShouldCreateAndReturnActiveUser(bool isActive)
     {
         // Arrange
         var service = CreateService();
@@ -485,14 +513,14 @@ public class UserServiceTests
         };
 
         _userRepository
-            .Setup(x => x.Create(newUser))
-            .Returns(createdUser);
+            .Setup(x => x.CreateAsync(newUser))
+            .ReturnsAsync(createdUser);
 
         // Act
-        var result = service.Create(newUser);
+        var result = await service.CreateAsync(newUser);
 
         // Assert
-        _userRepository.Verify(x => x.Create(newUser), Times.AtMostOnce);
+        _userRepository.Verify(x => x.CreateAsync(newUser), Times.AtMostOnce);
 
         result.Should().NotBeNull();
         result.Id.Should().Be(1);
@@ -504,7 +532,7 @@ public class UserServiceTests
     }
 
     [Fact]
-    public void Create_WhenUserWithNullDateOfBirth_ShouldCreateAndReturnUser()
+    public async Task CreateAsync_WhenUserWithNullDateOfBirth_ShouldCreateAndReturnUser()
     {
         // Arrange
         var service = CreateService();
@@ -528,14 +556,14 @@ public class UserServiceTests
         };
 
         _userRepository
-            .Setup(x => x.Create(newUser))
-            .Returns(createdUser);
+            .Setup(x => x.CreateAsync(newUser))
+            .ReturnsAsync(createdUser);
 
         // Act
-        var result = service.Create(newUser);
+        var result = await service.CreateAsync(newUser);
 
         // Assert
-        _userRepository.Verify(x => x.Create(newUser), Times.AtMostOnce);
+        _userRepository.Verify(x => x.CreateAsync(newUser), Times.AtMostOnce);
 
         result.Should().NotBeNull();
         result.Id.Should().Be(1);
@@ -548,10 +576,10 @@ public class UserServiceTests
 
     #endregion
 
-    #region Update Tests
+    #region UpdateAsync Tests
 
     [Fact]
-    public void Update_WhenValidUserProvided_ShouldCallRepository()
+    public async Task UpdateAsync_WhenValidUserProvided_ShouldCallRepository()
     {
         // Arrange
         var service = CreateService();
@@ -566,18 +594,18 @@ public class UserServiceTests
         };
 
         _userRepository
-            .Setup(x => x.Update(updatedUser))
-            .Returns(updatedUser);
+            .Setup(x => x.UpdateAsync(updatedUser))
+            .ReturnsAsync(updatedUser);
 
         // Act
-        var result = service.Update(updatedUser);
+        var result = await service.UpdateAsync(updatedUser);
 
         // Assert
-        _userRepository.Verify(x => x.Update(updatedUser), Times.AtMostOnce);
+        _userRepository.Verify(x => x.UpdateAsync(updatedUser), Times.AtMostOnce);
     }
 
     [Fact]
-    public void Update_WhenValidUserProvided_ShouldCallRepositoryAndReturnUpdatedUser()
+    public async Task UpdateAsync_WhenValidUserProvided_ShouldCallRepositoryAndReturnUpdatedUser()
     {
         // Arrange
         var service = CreateService();
@@ -592,21 +620,21 @@ public class UserServiceTests
         };
 
         _userRepository
-            .Setup(x => x.Update(updatedUser))
-            .Returns(updatedUser);
+            .Setup(x => x.UpdateAsync(updatedUser))
+            .ReturnsAsync(updatedUser);
 
         // Act
-        var result = service.Update(updatedUser);
+        var result = await service.UpdateAsync(updatedUser);
 
         // Assert
-        _userRepository.Verify(x => x.Update(updatedUser), Times.AtMostOnce);
+        _userRepository.Verify(x => x.UpdateAsync(updatedUser), Times.AtMostOnce);
 
         result.Should().NotBeNull();
         result.Should().BeEquivalentTo(updatedUser);
     }
 
     [Fact]
-    public void Update_WhenUserActiveStatusChanged_ShouldUpdateSuccessfully()
+    public async Task UpdateAsync_WhenUserActiveStatusChanged_ShouldUpdateSuccessfully()
     {
         // Arrange
         var service = CreateService();
@@ -621,14 +649,14 @@ public class UserServiceTests
         };
 
         _userRepository
-            .Setup(x => x.Update(user))
-            .Returns(user);
+            .Setup(x => x.UpdateAsync(user))
+            .ReturnsAsync(user);
 
         // Act
-        var result = service.Update(user);
+        var result = await service.UpdateAsync(user);
 
         // Assert
-        _userRepository.Verify(x => x.Update(user), Times.Once);
+        _userRepository.Verify(x => x.UpdateAsync(user), Times.Once);
 
         result.Should().NotBeNull();
         result.IsActive.Should().BeFalse();
@@ -636,7 +664,7 @@ public class UserServiceTests
     }
 
     [Fact]
-    public void Update_WhenUserInactiveStatusChanged_ShouldUpdateSuccessfully()
+    public async Task UpdateAsync_WhenUserInactiveStatusChanged_ShouldUpdateSuccessfully()
     {
         // Arrange
         var service = CreateService();
@@ -651,21 +679,21 @@ public class UserServiceTests
         };
 
         _userRepository
-            .Setup(x => x.Update(user))
-            .Returns(user);
+            .Setup(x => x.UpdateAsync(user))
+            .ReturnsAsync(user);
 
         // Act
-        var result = service.Update(user);
+        var result = await service.UpdateAsync(user);
 
         // Assert
-        _userRepository.Verify(x => x.Update(user), Times.Once);
+        _userRepository.Verify(x => x.UpdateAsync(user), Times.Once);
 
         result.Should().NotBeNull();
         result.IsActive.Should().BeTrue();
     }
 
     [Fact]
-    public void Update_WhenUserDateOfBirthChangedToNull_ShouldUpdateSuccessfully()
+    public async Task UpdateAsync_WhenUserDateOfBirthChangedToNull_ShouldUpdateSuccessfully()
     {
         // Arrange
         var service = CreateService();
@@ -680,14 +708,14 @@ public class UserServiceTests
         };
 
         _userRepository
-            .Setup(x => x.Update(user))
-            .Returns(user);
+            .Setup(x => x.UpdateAsync(user))
+            .ReturnsAsync(user);
 
         // Act
-        var result = service.Update(user);
+        var result = await service.UpdateAsync(user);
 
         // Assert
-        _userRepository.Verify(x => x.Update(user), Times.Once);
+        _userRepository.Verify(x => x.UpdateAsync(user), Times.Once);
 
         result.Should().NotBeNull();
         result.DateOfBirth.Should().BeNull();
@@ -695,10 +723,10 @@ public class UserServiceTests
 
     #endregion
 
-    #region Delete Tests
+    #region DeleteAsync Tests
 
     [Fact]
-    public void Delete_WhenUserExists_ShouldCallRepository()
+    public async Task DeleteAsync_WhenUserExists_ShouldCallRepository()
     {
         var service = CreateService();
         var user = new User
@@ -711,17 +739,17 @@ public class UserServiceTests
             DateOfBirth = null
         };
 
-        _userRepository.Setup(x => x.Delete(1)).Returns(user);
+        _userRepository.Setup(x => x.DeleteAsync(1)).ReturnsAsync(user);
 
         // Act
-        var result = service.Delete(1);
+        var result = await service.DeleteAsync(1);
 
         // Assert
-        _userRepository.Verify(x => x.Delete(1), Times.AtMostOnce);
+        _userRepository.Verify(x => x.DeleteAsync(1), Times.AtMostOnce);
     }
 
     [Fact]
-    public void Delete_WhenUserExists_ShouldCallRepositoryAndReturnUser()
+    public async Task DeleteAsync_WhenUserExists_ShouldCallRepositoryAndReturnUser()
     {
         var service = CreateService();
         var user = new User
@@ -734,36 +762,36 @@ public class UserServiceTests
             DateOfBirth = null
         };
 
-        _userRepository.Setup(x => x.Delete(1)).Returns(user);
+        _userRepository.Setup(x => x.DeleteAsync(1)).ReturnsAsync(user);
 
         // Act
-        var result = service.Delete(1);
+        var result = await service.DeleteAsync(1);
 
         // Assert
-        _userRepository.Verify(x => x.Delete(1), Times.AtMostOnce);
+        _userRepository.Verify(x => x.DeleteAsync(1), Times.AtMostOnce);
 
         result.Should().NotBeNull();
         result.Should().BeEquivalentTo(user);
     }
 
     [Fact]
-    public void Delete_WhenUserDoesNotExists_ShouldCallRepositoryAndReturnNull()
+    public async Task DeleteAsync_WhenUserDoesNotExists_ShouldCallRepositoryAndReturnNull()
     {
         var service = CreateService();
 
-        _userRepository.Setup(x => x.Delete(1)).Returns((User?)null);
+        _userRepository.Setup(x => x.DeleteAsync(1)).ReturnsAsync((User?)null);
 
         // Act
-        var result = service.Delete(1);
+        var result = await service.DeleteAsync(1);
 
         // Assert
-        _userRepository.Verify(x => x.Delete(1), Times.AtMostOnce);
+        _userRepository.Verify(x => x.DeleteAsync(1), Times.AtMostOnce);
 
         result.Should().BeNull();
     }
 
     [Fact]
-    public void Delete_WhenActiveUserExists_ShouldDeleteActiveUser()
+    public async Task DeleteAsync_WhenActiveUserExists_ShouldDeleteActiveUser()
     {
         var service = CreateService();
         var user = new User
@@ -776,20 +804,20 @@ public class UserServiceTests
             DateOfBirth = null
         };
 
-        _userRepository.Setup(x => x.Delete(1)).Returns(user);
+        _userRepository.Setup(x => x.DeleteAsync(1)).ReturnsAsync(user);
 
         // Act
-        var result = service.Delete(1);
+        var result = await service.DeleteAsync(1);
 
         // Assert
-        _userRepository.Verify(x => x.Delete(1), Times.AtMostOnce);
+        _userRepository.Verify(x => x.DeleteAsync(1), Times.AtMostOnce);
 
         result.Should().NotBeNull();
         result.IsActive.Should().BeTrue();
     }
 
     [Fact]
-    public void Delete_WhenInactiveUserExists_ShouldDeleteInactiveUser()
+    public async Task DeleteAsync_WhenInactiveUserExists_ShouldDeleteInactiveUser()
     {
         var service = CreateService();
         var user = new User
@@ -802,13 +830,13 @@ public class UserServiceTests
             DateOfBirth = null
         };
 
-        _userRepository.Setup(x => x.Delete(1)).Returns(user);
+        _userRepository.Setup(x => x.DeleteAsync(1)).ReturnsAsync(user);
 
         // Act
-        var result = service.Delete(1);
+        var result = await service.DeleteAsync(1);
 
         // Assert
-        _userRepository.Verify(x => x.Delete(1), Times.AtMostOnce);
+        _userRepository.Verify(x => x.DeleteAsync(1), Times.AtMostOnce);
 
         result.Should().NotBeNull();
         result.IsActive.Should().BeFalse();
@@ -816,10 +844,10 @@ public class UserServiceTests
 
     #endregion
 
-    private IQueryable<User> SetupUsers(string forename = "Johnny", string surname = "User",
+    private List<User> SetupUsers(string forename = "Johnny", string surname = "User",
         string email = "juser@example.com", bool isActive = true)
     {
-        var users = new[]
+        var users = new List<User>
         {
             new User
             {
@@ -829,15 +857,12 @@ public class UserServiceTests
                 IsActive = isActive,
                 DateOfBirth = new DateTime(2000, 1, 1)
             }
-        }.AsQueryable();
+        };
 
         _userRepository
-            .Setup(s => s.GetAll())
-            .Returns(users);
+            .Setup(s => s.GetAllAsync())
+            .ReturnsAsync(users);
 
         return users;
     }
-
-    private readonly Mock<IUserRepository> _userRepository = new();
-    private UserService CreateService() => new(_userRepository.Object);
 }

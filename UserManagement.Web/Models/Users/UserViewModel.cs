@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using UserManagement.Web.Models.Logs;
 using UserManagement.Web.Validation;
 
 namespace UserManagement.Web.Models.Users;
@@ -28,4 +29,7 @@ public class UserViewModel
     [DataType(DataType.Date)]
     [DateOfBirthValidation]
     public DateTime? DateOfBirth { get; set; }
+
+    // Adding logs to View page
+    public List<UserActivityLogViewModel> UserActivityLogs { get; set; } = new();
 }

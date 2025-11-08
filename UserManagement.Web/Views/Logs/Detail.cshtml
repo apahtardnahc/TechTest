@@ -1,0 +1,89 @@
+﻿@model UserManagement.Web.Models.Logs.LogViewModel
+
+<h2>User Activity Logs</h2>
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="@Url.Action("List", "Logs")">Activity Logs</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">Log Details</li>
+                </ol>
+            </nav>
+            <h1 class="display-5">Log Details</h1>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-light">
+            <h5 class="card-title mb-0">
+                <span class="badge @GetActionBadgeClass(Model.Action) me-2">
+                    @Model.Action
+                </span>
+                Log Entry #@Model.Id
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label text-muted small">Log ID</label>
+                        <p class="fw-semibold">@Model.Id</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label text-muted small">Timestamp</label>
+                        <p class="fw-semibold">@Model.TimeStamp.ToString("dddd, dd MMMM yyyy HH:mm:ss")</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label text-muted small">Action Type</label>
+                        <p>
+                            <span class="badge @GetActionBadgeClass(Model.Action)">
+                                @Model.Action
+                            </span>
+                        </p>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="mb-3">
+                        <label class="form-label text-muted small">Details</label>
+                        <div class="alert alert-light border">
+                            @Model.Details
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer bg-light">
+            <a href="@Url.Action("List", "Logs")" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Back to Logs
+            </a>
+            @if (Model.UserId.HasValue)
+            {
+                <a href="@Url.Action("UserLogs", "Logs", new { userId = Model.UserId })"
+                   class="btn btn-outline-primary">
+                    <i class="bi bi-list"></i> View All Logs for This User
+                </a>
+            }
+        </div>
+    </div>
+</div>
+
+@functions {
+    string GetActionBadgeClass(string action)
+    {
+        return action switch
+        {
+            "CREATE" => "bg-success",
+            "UPDATE" => "bg-warning text-dark",
+            "DELETE" => "bg-danger",
+            "VIEW" => "bg-info",
+            _ => "bg-secondary"
+        };
+    }
+}

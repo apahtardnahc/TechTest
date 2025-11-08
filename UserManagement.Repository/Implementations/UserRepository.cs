@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UserManagement.Data;
 using UserManagement.Models;
 using UserManagement.Repository.Interfaces;
@@ -11,34 +12,43 @@ public class UserRepository : IUserRepository
 
     public UserRepository(IDataContext dataContext) => _dataContext = dataContext;
 
-    public IEnumerable<User> GetAll() => _dataContext.GetAll<User>();
-
-    public IEnumerable<User> GetByActiveStatus(bool isActive) =>
-        _dataContext.GetAll<User>().Where(user => user.IsActive == isActive);
-
-    public User? GetById(long id) => _dataContext.GetAll<User>().FirstOrDefault(user => user.Id == id);
-    //public void Create(User user) => _dataContext.Create(user);
-
-    public User Create(User user) {
-        return _dataContext.Create(user);
-    }
-
-    //public void Update(User user) => _dataContext.Update(user);
-
-    public User Update(User user)
+    public async Task<List<User>> GetAllAsync()
     {
-        return _dataContext.Update(user);
+        return await _dataContext.GetAllAsync<User>();
     }
 
-    public User? Delete(long id) {
-        var userToDelete = GetById(id);
+    public async Task<List<User>> GetByActiveStatusAsync(bool isActive)
+    {
+        var users = await _dataContext.GetAllAsync<User>();
+        return users.Where(user => user.IsActive == isActive).ToList();
+    }
+
+    public async Task<User?> GetByIdAsync(long id)
+    {
+        var users = await _dataContext.GetAllAsync<User>();
+        return users.FirstOrDefault(user => user.Id == id);
+    }
+
+    public async Task<User> CreateAsync(User user)
+    {
+        return await _dataContext.CreateAsync(user);
+    }
+
+    public async Task<User> UpdateAsync(User user)
+    {
+        return await _dataContext.UpdateAsync(user);
+    }
+
+    public async Task<User?> DeleteAsync(long id)
+    {
+        var userToDelete = await GetByIdAsync(id);
 
         if (userToDelete == null)
         {
             return null;
         }
 
-        _dataContext.Delete(userToDelete);
+        await _dataContext.DeleteAsync(userToDelete);
         return userToDelete;
     }
 }

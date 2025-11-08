@@ -1,0 +1,167 @@
+﻿@model UserManagement.Web.Models.Logs.LogListViewModel
+
+<h2>All Activity Logs with Pagination</h2>
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="display-4">Activity Logs</h1>
+            <p class="lead">View all user activity logs</p>
+        </div>
+    </div>
+    @* Empty should display no items *@
+    @if (!Model.Items.Any())
+    {
+        <div class="alert alert-warning" role="alert">
+            <i class="bi bi-info-circle"></i> No logs found.
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col">Date & Time</th>
+                                <th scope="col">Action</th>
+                                <th scope="col">User</th>
+                                <th scope="col">Details</th>
+                                <th scope="col">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var log in Model.Items)
+                            {
+                                <tr>
+                                    <td>
+                                        <small>
+                                            @log.TimeStamp.ToString("dd/MM/yyyy HH:mm:ss")
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <span class="badge @GetActionBadgeClass(log.Action)">
+                                            @log.Action
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if (log.UserId.HasValue)
+                                        {
+                                            <a href="@Url.Action("View", "Users", new { id = log.UserId })" class="text-decoration-none">
+                                                @log.UserForename @log.UserSurname
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <span>System</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <small>@log.Details</small>
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Action("Detail", "Logs", new { id = log.Id })"
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-eye"></i> View
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        @* Pagination controls *@
+        @* Don't show controls if there's only one page *@
+        @if (Model.TotalPages > 1)
+        {
+            <nav class="mt-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        Currently showing: @(((@Model.CurrentPageIndex - 1) * @Model.PageSize) + 1) to @(Math.Min(Model.PageSize * Model.CurrentPageIndex, Model.TotalCount)) of @Model.TotalCount logs
+                    </div>
+                    
+                    @* Previous button *@
+                    @if ((Model.HasPreviousPage))
+                    {
+                        <a class="page-link"
+                           href="@Url.Action("List", new { currentPageIndex = Model.CurrentPageIndex - 1, pageSize = Model.PageSize})">
+                            Previous
+                        </a>
+                    }
+                    else
+                    {
+                        @* Disabled because you can't go back anymore' *@
+                        <span class="text-secondary">
+                            Previous
+                        </span>
+                    }
+                    
+                     @* Page Numbers  *@
+                    @for (int i = 1; i <= Model.TotalPages; i++)
+                    {
+                        <div class="page-item @(i == Model.CurrentPageIndex ? "active" : "")">
+                        @* Disable ethe current page *@
+                        @if (i == Model.CurrentPageIndex)
+                        {
+                            <span class="page-link">@i</span>
+                        }
+                        else
+                        {
+                            <a class="page-link"
+                                   href="@Url.Action("List", new { currentPageIndex = i, pageSize = Model.PageSize })">
+                                @i
+                            </a>
+                        }
+                        </div>
+
+                    }
+
+                    @* Next button *@
+                    @if ((Model.HasNextPage))
+                    {
+                        <a class="page-link"
+                           href="@Url.Action("List", new { currentPageIndex = Model.CurrentPageIndex + 1, pageSize = Model.PageSize })">
+                            Next
+                        </a>
+                    }
+                    else
+                    {
+                        @* Disabled because you can't go back anymore' *@
+                        <span class="text-secondary">
+                            Next
+                        </span>
+                    }
+                    
+
+                    
+                </div>
+            </nav>
+        }
+        else
+        {
+            <div class="mt-3">
+                <p>
+                    Showing @Model.Items.Count log entries
+                </p>
+            </div>
+        }
+        
+    }
+</div>
+
+@functions {
+    string GetActionBadgeClass(string action)
+    {
+        return action switch
+        {
+            "CREATE" => "bg-success",
+            "UPDATE" => "bg-warning text-dark",
+            "DELETE" => "bg-danger",
+            "VIEW" => "bg-info",
+            _ => "bg-secondary"
+        };
+    }
+}

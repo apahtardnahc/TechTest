@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using UserManagement.Models;
 using UserManagement.Repository.Interfaces;
 using UserManagement.Services.Domain.Interfaces;
@@ -7,10 +9,8 @@ namespace UserManagement.Services.Domain.Implementations;
 
 public class UserService : IUserService
 {
-    // Refactoring
-    //private readonly IDataContext _dataAccess;
     private readonly IUserRepository _userRepository;
-    //public UserService(IDataContext dataAccess) => _dataAccess = dataAccess;
+
     public UserService(IUserRepository userRepository) => _userRepository = userRepository;
 
     /// <summary>
@@ -18,21 +18,49 @@ public class UserService : IUserService
     /// </summary>
     /// <param name="isActive"></param>
     /// <returns></returns>
-    public IEnumerable<User> FilterByActive(bool isActive)
+    public async Task<IEnumerable<User>> FilterByActiveAsync(bool isActive)
     {
-        //throw new NotImplementedException();
-        return _userRepository.GetByActiveStatus(isActive);
+        var users = await _userRepository.GetAllAsync();
+        return users.Where(user => user.IsActive == isActive);
     }
 
-    public IEnumerable<User> GetAll() => _userRepository.GetAll();
+    /// <summary>
+    /// Return all users
+    /// </summary>
+    public async Task<IEnumerable<User>> GetAllAsync()
+    {
+        return await _userRepository.GetAllAsync();
+    }
 
-    // Task 3 methods
-    // TODO add tests
-    public User? GetById(long id) => _userRepository.GetById(id);
+    /// <summary>
+    /// Returns a user by their specific id
+    /// </summary>
+    public async Task<User?> GetByIdAsync(long id)
+    {
+        return await _userRepository.GetByIdAsync(id);
+    }
 
-    public User Create(User user) => _userRepository.Create(user);
+    /// <summary>
+    /// Create a new user
+    /// </summary>
+    public async Task<User> CreateAsync(User user)
+    {
+        return await _userRepository.CreateAsync(user);
+    }
 
-    public User Update(User user) => _userRepository.Update(user);
+    /// <summary>
+    /// Update an existing user
+    /// </summary>
+    public async Task<User> UpdateAsync(User user)
+    {
+        return await _userRepository.UpdateAsync(user);
+    }
 
-    public User? Delete(long id) => _userRepository.Delete(id);
+    /// <summary>
+    /// Delete a user by id
+    /// </summary>
+    public async Task<User?> DeleteAsync(long id)
+    {
+        return await _userRepository.DeleteAsync(id);
+    }
 }
