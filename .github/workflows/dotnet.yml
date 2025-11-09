@@ -9,7 +9,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  build-and-test:
 
     runs-on: ubuntu-latest
     permissions:
@@ -35,10 +35,12 @@ jobs:
     - name: Test With Coverage 
       run: dotnet test --no-build --verbosity normal --logger "trx;LogFileName=test-results.trx" --results-directory ./TestResults
 
-    - name: Test Summary
-      uses: test-summary/action@v2.4
+    - name: Test Report
+      uses: dorny/test-reporter@v2
       if: always()
       with:
+        name: .NET Tests
         paths: "TestResults/*.trx"
-        show: "all"
+        reporter: dotnet-trx
+        fail-on-error: true
 
