@@ -35,7 +35,7 @@ public class DataContext : DbContext, IDataContext
                 Surname = "Loew",
                 Email = "ploew@example.com",
                 IsActive = true,
-                DateOfBirth = new DateTime(1999, 11, 1)
+                DateOfBirth = new DateTime(1999, 11, 1, 0, 0, 0, DateTimeKind.Utc)
             },
             new User
             {
@@ -44,7 +44,7 @@ public class DataContext : DbContext, IDataContext
                 Surname = "Gates",
                 Email = "bfgates@example.com",
                 IsActive = true,
-                DateOfBirth = new DateTime(1998, 11, 2)
+                DateOfBirth = new DateTime(1998, 11, 2, 0, 0, 0, DateTimeKind.Utc)
             },
             new User
             {
@@ -53,7 +53,7 @@ public class DataContext : DbContext, IDataContext
                 Surname = "Troy",
                 Email = "ctroy@example.com",
                 IsActive = false,
-                DateOfBirth = new DateTime(1997, 11, 3)
+                DateOfBirth = new DateTime(1997, 11, 3, 0, 0, 0, DateTimeKind.Utc)
             },
             new User
             {
@@ -62,7 +62,7 @@ public class DataContext : DbContext, IDataContext
                 Surname = "Raines",
                 Email = "mraines@example.com",
                 IsActive = true,
-                DateOfBirth = new DateTime(1996, 11, 4)
+                DateOfBirth = new DateTime(1996, 11, 4, 0, 0, 0, DateTimeKind.Utc)
             },
             new User
             {
@@ -71,7 +71,7 @@ public class DataContext : DbContext, IDataContext
                 Surname = "Goodspeed",
                 Email = "sgodspeed@example.com",
                 IsActive = true,
-                DateOfBirth = new DateTime(1995, 11, 5)
+                DateOfBirth = new DateTime(1995, 11, 5, 0, 0, 0, DateTimeKind.Utc)
             },
             new User
             {
@@ -80,7 +80,7 @@ public class DataContext : DbContext, IDataContext
                 Surname = "McDunnough",
                 Email = "himcdunnough@example.com",
                 IsActive = true,
-                DateOfBirth = new DateTime(1994, 11, 6)
+                DateOfBirth = new DateTime(1994, 11, 6, 0, 0, 0, DateTimeKind.Utc)
             },
             new User
             {
@@ -89,7 +89,7 @@ public class DataContext : DbContext, IDataContext
                 Surname = "Poe",
                 Email = "cpoe@example.com",
                 IsActive = false,
-                DateOfBirth = new DateTime(1993, 11, 7)
+                DateOfBirth = new DateTime(1993, 11, 7, 0, 0, 0, DateTimeKind.Utc)
             },
             new User
             {
@@ -98,7 +98,7 @@ public class DataContext : DbContext, IDataContext
                 Surname = "Malus",
                 Email = "emalus@example.com",
                 IsActive = false,
-                DateOfBirth = new DateTime(1992, 11, 8)
+                DateOfBirth = new DateTime(1992, 11, 8, 0, 0, 0, DateTimeKind.Utc)
             },
             new User
             {
@@ -107,7 +107,7 @@ public class DataContext : DbContext, IDataContext
                 Surname = "Macready",
                 Email = "dmacready@example.com",
                 IsActive = false,
-                DateOfBirth = new DateTime(1991, 11, 9)
+                DateOfBirth = new DateTime(1991, 11, 9, 0, 0, 0, DateTimeKind.Utc)
             },
             new User
             {
@@ -116,7 +116,7 @@ public class DataContext : DbContext, IDataContext
                 Surname = "Blaze",
                 Email = "jblaze@example.com",
                 IsActive = true,
-                DateOfBirth = new DateTime(1990, 11, 10)
+                DateOfBirth = new DateTime(1990, 11, 10, 0, 0, 0, DateTimeKind.Utc)
             },
             new User
             {

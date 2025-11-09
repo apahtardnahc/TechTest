@@ -1,0 +1,17 @@
+services:
+  postgres:
+    image: postgres
+    container_name: usermanagement-postgres-docker
+    environment:
+      POSTGRES_DB: UserManagementDb
+      POSTGRES_USER: User
+      POSTGRES_PASSWORD: User
+    ports: 
+      - "5432:5432"
+    # What's this for
+#     volumes:
+#     - postgres_data:/var/lib/postgresql/data
+
+# volumes:
+#   postgres_data:
+#     driver: local

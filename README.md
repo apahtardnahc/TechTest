@@ -1,3 +1,77 @@
+## Set up Instructions 
+
+### Prerequisties 
+- [.NET 9.0 SDK](https://dotnet.microsoft.com/download)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop)
+- [Docker CLI]
+- [dotnet-ef CLI tool](https://learn.microsoft.com/en-us/ef/core/cli/dotnet) (I used it to create the migrations)
+
+
+### In order to run the application 
+
+1. ** Start PostgreSQL in Docker**
+
+```bash docker compose up -d ```
+
+If you're on Windows please try in CMD with Docker CLI installed:
+```docker compose up -d```
+
+2. **Running the application using Docker** 
+
+You can start it up in Visual Studio (Community Edition) while having the project under UserManagent.Web
+
+Using dotnet CLI on Windows:
+```dotnet run --project UserManagement.web```
+
+3. **Stop PostgreSQL** 
+```docker compose down```
+Will close the instance without losing data (I believe)
+
+
+### Database 
+- Database is using: PostgreSQL
+- Connection from database to Application is using Connection string which can be found and altered in `appsettings.json`
+- Migrations have already been completed can are contained within UserManagement.Data
+- Inital Data has been provided by DataContext 
+
+### Additional Packages 
+
+- `Npgsql.EntityFrameworkCore.PostgreSQL`
+    - Version used: 9.0.4
+    - Used for: PostgreSQL provider for EF (Entity Framework)
+- `Microsoft.EntityFrameworkCore.Design` 
+    - Version used: 9.0.10
+    - Used for: CLI tool which was used for migration of data form Datacontext to database
+
+### Creating migrations or updating migrations 
+
+- Migrations were made using the dotnet-ef CLI tool the following commands were used:
+
+```
+dotnet ef migrations add MIGRATION_NAME --project UserManagement.Data --startup-project UserManagement.Web
+```
+Customized for work space:
+```
+dotnet ef migrations add InitialCreate --project UserManagement.Data --startup-project UserManagement.Web
+```
+
+- To update a migration 
+```
+dotnet ef database update --project UserManagement.Data --startup-project UserManagement.Web
+```
+
+
+### Additional commands 
+
+Observe containers/instances
+```
+docker ps
+```
+Logs:
+```
+docker logs postgres-db
+```
+
 # User Management Technical Exercise
 
 The exercise is an ASP.NET Core web application backed by Entity Framework Core, which faciliates management of some fictional users.
