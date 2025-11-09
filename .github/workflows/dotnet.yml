@@ -13,6 +13,11 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+      checks: write
+      pull-request: write
     strategy:
       matrix:
         dotnet-version: ['9.0.x']
@@ -22,10 +27,13 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 9.0.x
+        
     - name: Restore dependencies
       run: dotnet restore
+
     - name: Build
       run: dotnet build --no-restore
+
     - name: Test With Coverage 
       run: dotnet test --no-build --verbosity normal --logger "trx;LogFileName=test-results.trx"
 
@@ -34,4 +42,5 @@ jobs:
       if: always()
       with:
         paths: "**/test-results.trx"
+        show: "all"
 
