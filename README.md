@@ -72,6 +72,22 @@ Logs:
 docker logs postgres-db
 ```
 
+## CI Pipelines
+
+### Continuous Integration (CI)
+
+The application uses GitHub Actions for Continuous Integration
+Every push to main results in:
+    - Code being built
+    - Running unit tests
+        - Tests results are published after as a report summary with the build
+    
+This can be seen in: `.github/workflows/dotnet.yml`
+
+### Attempted Continuous Deployement (CD)
+
+This is evidenced in `.github/workflows/cd.yml`
+
 # User Management Technical Exercise
 
 The exercise is an ASP.NET Core web application backed by Entity Framework Core, which faciliates management of some fictional users.
