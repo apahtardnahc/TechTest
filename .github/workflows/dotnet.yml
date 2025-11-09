@@ -18,11 +18,10 @@ jobs:
       actions: read
       checks: write
       pull-requests: write
-    strategy:
-      matrix:
-        dotnet-version: ['9.0.x']
+
     steps:
     - uses: actions/checkout@v4
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
@@ -35,12 +34,12 @@ jobs:
       run: dotnet build --no-restore
 
     - name: Test With Coverage 
-      run: dotnet test --no-build --verbosity normal --logger "trx;LogFileName=test-results.trx"
+      run: dotnet test --no-build --verbosity normal --logger "trx;LogFileName=test-results.trx" --results-directory
 
-    - name: TestForest Dashboard
+    - name: Test Summary
       uses: test-summary/action@v2.4
       if: always()
       with:
-        paths: "**/test-results.trx"
+        paths: "TestResults/*.trx"
         show: "all"
 
