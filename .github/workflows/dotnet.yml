@@ -33,7 +33,7 @@ jobs:
       run: dotnet build --no-restore
 
     - name: Test With Coverage 
-      run: dotnet test --no-build --verbosity normal --logger "trx;LogFileName=test-results.trx" --results-directory ./TestResults
+      run: dotnet test UserManagement.sln --no-build --verbosity normal --logger "trx;LogFileName=test-results.trx" --results-directory ./TestResults
 
     - name: Test Report
       uses: dorny/test-reporter@v2
