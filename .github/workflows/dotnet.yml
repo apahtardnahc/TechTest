@@ -1,7 +1,6 @@
 # This workflow will build a .NET project
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
-
-name: .NET
+name: .NET CI
 
 on:
   push:
@@ -34,7 +33,7 @@ jobs:
       run: dotnet build --no-restore
 
     - name: Test With Coverage 
-      run: dotnet test --no-build --verbosity normal --logger "trx;LogFileName=test-results.trx" --results-directory
+      run: dotnet test --no-build --verbosity normal --logger "trx;LogFileName=test-results.trx" --results-directory ./TestResults
 
     - name: Test Summary
       uses: test-summary/action@v2.4
