@@ -9,7 +9,7 @@
 
 ### In order to run the application 
 
-1. ** Start PostgreSQL in Docker**
+1. **Start PostgreSQL in Docker**
 
 ```bash docker compose up -d ```
 
