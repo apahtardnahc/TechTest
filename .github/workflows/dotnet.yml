@@ -32,15 +32,15 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
 
-    - name: Test With Coverage 
-      run: dotnet test UserManagement.sln --no-build --verbosity normal --logger "trx;LogFileName=test-results.trx" --results-directory ./TestResults
+    - name: Tests
+      run: dotnet test UserManagement.sln --no-build --verbosity normal --logger "trx" --results-directory ./TestResults
 
     - name: Test Report
       uses: dorny/test-reporter@v2
       if: always()
       with:
         name: .NET Tests
-        path: "TestResults/*.trx"
+        path: "TestResults/**/*.trx"
         reporter: dotnet-trx
         fail-on-error: true
 
