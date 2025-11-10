@@ -11,7 +11,7 @@
 
 1. **Start PostgreSQL in Docker**
 (PLEASE ENSURE THAT THE DOCKER DESKTOP APPLICATION IS RUNNING)
-```bash docker compose up -d ```
+    ```bash docker compose up -d ```
 
 If you're on Windows please try in CMD with Docker CLI installed:
 ```docker compose up -d```
@@ -25,7 +25,7 @@ Using dotnet CLI on Windows:
 
 3. **Stop PostgreSQL** 
 ```docker compose down```
-Will close the instance without losing data (I believe)
+Will close the instance without losing data
 
 
 ### Database 

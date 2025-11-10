@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.VisualBasic;
 using UserManagement.Models;
 using UserManagement.Services.Domain.Interfaces;
 using UserManagement.Web.Models.Users;
@@ -235,7 +237,9 @@ public class UsersController : Controller
         user.Surname = model.Surname;
         user.Email = model.Email;
         user.IsActive = model.IsActive;
-        user.DateOfBirth = model.DateOfBirth;
+        user.DateOfBirth = model.DateOfBirth != null
+            ? DateTime.SpecifyKind(model.DateOfBirth.Value, DateTimeKind.Utc)
+            : null;
     }
 
     private UserListItemViewModel MapToListItem(User user)
