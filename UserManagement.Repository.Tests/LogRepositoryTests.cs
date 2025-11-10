@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using UserManagement.Data;
 using UserManagement.Models;
 using UserManagement.Repository.Implementations;
@@ -19,7 +18,6 @@ public class LogRepositoryTests
     public async Task GetAllAsync_ShouldReturnEmptyCollection_WhenNoLogs()
     {
         // Arrange
-        //var options = new DbContextOptionsBuilder()
         var context = CreateContext();
         var user = new User { Forename = "Test", Surname = "User", Email = "test@example.com", IsActive = true };
         await context.Users.AddAsync(user);
@@ -73,7 +71,6 @@ public class LogRepositoryTests
     public async Task GetAllAsync_WhenUserNotNullInLog_ShouldIncludeUser()
     {
         // Arrange
-        //var mockDataContext = new Mock<IDataContext>();
         var context = CreateContext();
         var user = new User { Forename = "Test", Surname = "User", Email = "test@example.com", IsActive = true };
         await context.Users.AddAsync(user);
@@ -208,8 +205,6 @@ public class LogRepositoryTests
 
         var repository = new LogRepository(context);
 
-        //var mockContext = CreateMockContextWithXLogs(20);
-        //var repository = new LogRepository(mockContext.Object);
         var currentPageIndex = 1;
         var pageSize = 10;
 
@@ -325,14 +320,11 @@ public class LogRepositoryTests
     private DataContext CreateContext()
     {
         var options = new DbContextOptionsBuilder<DataContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()) // Unique DB per test
+            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
 
         var context = new DataContext(options);
-
-        // Optional: Customize model if needed (e.g., ToInMemoryQuery, seed data)
-        // modelBuilder customization is not typically needed for basic LogRepo tests
-
+        
         context.Database.EnsureCreated();
         return context;
     }

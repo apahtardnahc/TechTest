@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using UserManagement.Models;
@@ -12,7 +11,6 @@ public class DataContext : DbContext, IDataContext
 {
     public DataContext() { }
 
-    // Database is persisting between tests need to fix
     public DataContext(DbContextOptions<DataContext> options) : base(options) { }
 
     // Causing persisting issues with tests

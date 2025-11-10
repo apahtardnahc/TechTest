@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using UserManagement.Data;
-using UserManagement.Models;
 using UserManagement.Repository.Interfaces;
 using UserManagement.Web.Models.Logs;
 

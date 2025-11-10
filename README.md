@@ -10,7 +10,7 @@
 ### In order to run the application 
 
 1. **Start PostgreSQL in Docker**
-
+(PLEASE ENSURE THAT THE DOCKER DESKTOP APPLICATION IS RUNNING)
 ```bash docker compose up -d ```
 
 If you're on Windows please try in CMD with Docker CLI installed:

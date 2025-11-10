@@ -9,7 +9,6 @@ public class DateOfBirthValidation : ValidationAttribute
     {
         ErrorMessage = "Invalid Date of Birth, the date of birth cannot be in the future.";
     }
-
     public override bool IsValid(object? value)
     {
         return value switch

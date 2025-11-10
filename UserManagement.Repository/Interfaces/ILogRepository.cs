@@ -6,12 +6,6 @@ namespace UserManagement.Repository.Interfaces;
 
 public interface ILogRepository
 {
-    //IEnumerable<Log> GetAll();
-    //Log? GetById(long id);
-    //IEnumerable<Log> GetByUserId(long userId);
-    //IEnumerable<Log> GetPaginatedLogs(int currentPageIndex, int pageSize);
-    //int GetTotalLogCount();
-    //Log Create(Log log);
     Task<List<Log>> GetAllAsync();
     Task<Log?> GetByIdAsync(long id);
     Task<IEnumerable<Log>> GetByUserIdAsync(long userId);

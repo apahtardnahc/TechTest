@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Moq;
 using UserManagement.Models;
 using UserManagement.Repository.Interfaces;
 using UserManagement.Services.Domain.Implementations;

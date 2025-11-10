@@ -10,7 +10,6 @@ public class Log
     [Key, DatabaseGenerated((DatabaseGeneratedOption.Identity))]
     public long Id { get; set;}
     public long? UserId { get; set; }
-    
     [Required]
     [MaxLength(50)]
     public string Action { get; set; } = string.Empty;
@@ -19,8 +18,6 @@ public class Log
     public string Details { get; set; } = string.Empty;
     [Required]
     public DateTime TimeStamp { get; set; }
-
-    // What else could we need?
     [ForeignKey(nameof(UserId))]
     public User? User { get; set; }
 }
